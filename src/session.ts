@@ -64,6 +64,13 @@ export class Session {
         });
     }
 
+    deleteCookie() {
+        this.cookie.delete(this.cookie_name, {
+            httpOnly: true,
+            path: '/',
+        });
+    }
+
     getKey() {
         return `${this.prefix}:${this.id}`
     }
@@ -72,6 +79,8 @@ export class Session {
         const key = this.getKey()
         const datastore = this.kvNamespace
         const ttl = this.ttl
+        const id = this.id
+        const deleteCookie = this.deleteCookie.bind(this)
         this.data = {}
         if (!this.is_new) {
             try {
@@ -82,10 +91,18 @@ export class Session {
         }
 
         return {
-            id: this.id,
+            id: id,
             data: this.data as SessionData,
             save: async function(): Promise<boolean> {
                 return await saveSession(key, this.data, datastore!, ttl)
+            },
+            destroy: async function(): Promise<boolean> {
+                this.id = ''
+                this.data = {}
+                this.save = async () => false
+
+                deleteCookie()
+                return await destroySession(key, datastore!)
             }
         } as SessionObject
     }
@@ -102,6 +119,19 @@ async function saveSession(
     }
     try {
         await datastore.put(key, JSON.stringify(data), expiration)
+    } catch (err) {
+        console.error(`KV returned error: ${err}`);
+        return false
+    }
+    return true
+}
+
+async function destroySession(
+    key: string,
+    datastore: KVNamespace,
+): Promise<boolean> {
+    try {
+        await datastore.delete(key)
     } catch (err) {
         console.error(`KV returned error: ${err}`);
         return false

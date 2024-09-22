@@ -1,6 +1,6 @@
 {
-  "name": "@ngreimel/honojs-session",
-  "version": "0.0.1",
+  "name": "honojs-session",
+  "version": "0.1.0",
   "description": "Session management for Hono JS, integrate stateful sessions with Cloudflare Workers KV.",
   "main": "dist/index.js",
   "files": [
@@ -11,7 +11,7 @@
     "build": "tsup && publint",
     "watch": "tsup --watch",
     "publint": "publint",
-    "release": "yarn build && yarn test && yarn publint && yarn npm publish"
+    "release": "yarn build && yarn test && yarn publint && yarn publish"
   },
   "exports": {
     ".": {
@@ -43,10 +43,6 @@
   },
   "engines": {
     "node": ">=18.4.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ngreimel/honojs-session.git"
   },
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }
